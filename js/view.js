@@ -76,7 +76,7 @@ export default class View {
 
     addTodo(title,description) {
         this.model.id++
-        const todo = this.model.addTodo(title,description,this.model.id,false);
+        const todo = this.model.addTodo(title,description,this.model.id,false);//es ultimo parametro es para marcar si esta completada la tarea.
         const addTodo = new createTodo();
         let [ removeBtn , editBtn , todos , checkBtn] = addTodo.insertElements(todo.title,todo.description,this.model.id);
         
