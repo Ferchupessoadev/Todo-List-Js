@@ -3,9 +3,9 @@ export default class Alert {
 
     }
 
-    validationTheInputs(titleParametro,descriptionParametro,errTitleParametro,errDescriptionParametro) {
-        const title = document.getElementById(titleParametro);  
-        const description = document.getElementById(descriptionParametro);
+    alertForInputs() {
+        const title = document.getElementById("title");  
+        const description = document.getElementById("description");
 
         if (title.value === "" || description.value === "") {
             if (title.value === "") {
@@ -27,12 +27,6 @@ export default class Alert {
         } else {
             return true
         };
-    }
-
-    alertForInputs() {
-        const title = "title",description = "description";
-        const valueOfTheValidation = this.validationTheInputs(title,description);
-        return valueOfTheValidation;
     };
 
     alertForInputsOfEdit() {
@@ -44,16 +38,17 @@ export default class Alert {
                 title.addEventListener("click",()=>{
                     title.style.border = "none";
                 })
-            } 
+            }
             
-            if (description.value == "" || description.value == null) {
+            else if (description.value == "" || description.value == null) {
                 description.style.border = "1px solid #f00";
                 description.addEventListener("click",()=>{
                     description.style.border = "none";
-                })
-            }
+                });
+            };
             return false;
-        } else {
+        } 
+        else {
             return true;
         }
     } 
