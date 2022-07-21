@@ -28,11 +28,11 @@ export default class CreateTodo {
         divBtn.classList.add("add-todo__completed-img");
 
         const removeBtn = document.createElement("img");
-        removeBtn.setAttribute("src","../img/trash.svg");
+        removeBtn.setAttribute("src","./img/trash.svg");
         removeBtn.classList.add("trash");
             
         const editBtn = document.createElement("img"); 
-        editBtn.setAttribute("src","../img/edit.svg");
+        editBtn.setAttribute("src","./img/edit.svg");
         editBtn.classList.add("edit");
 
         addTodo.appendChild(createTitle);
