@@ -87,14 +87,16 @@ export default class View {
         editBtn.addEventListener("click",()=> this.editTodo(todos.getAttribute("id")));
     };
 
-    render() {    
-        if(JSON.parse(localStorage.getItem("todos")).length > 0 && localStorage.length > 0){
-        const todo = this.model.render();// nos retorna una copia de los objetos del localStorage.
+    render() {   
+        console.log(localStorage.length); 
+        if(JSON.parse(localStorage.getItem("todos")).length > 0){
+        const todo = this.model.render();
+        console.log(todo)// nos retorna una copia de los objetos del localStorage.
             todo.forEach((element) => {
                 const addTodo = new createTodo();
                 let [ removeBtn , editBtn ,  addTodos , checkBtn] = addTodo.insertElements(element.title,element.description,element.id,element.completed);
                 checkBtn.addEventListener("click",(e)=>{
-                        this.model.check(element.title,element.description,e.target.checked);
+                    this.model.check(element.title,element.description,e.target.checked);
                 });
                 removeBtn.addEventListener("click",()=> this.removeTodo(element.id));
                 editBtn.addEventListener("click",()=> this.editTodo(element.id));

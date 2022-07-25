@@ -14,10 +14,10 @@ export default class Model {
     }
 
     render() {
-        if(JSON.parse(localStorage.getItem("todos")).length > 0 && localStorage.length > 0) {
+        if(JSON.parse(localStorage.getItem("todos")).length > 0) {     
             const todos = JSON.parse(localStorage.getItem("todos"));
             const copyTodos = todos.map(element => {
-            const { id , title , description , completed } = element;
+                const {id,title,description,completed} = element
                 const todo = {
                     id,
                     title,
@@ -26,10 +26,10 @@ export default class Model {
                 };
                 this.todos.push(todo);          
                 return todo;
+                
             });
             return copyTodos;
-        };
-        return 0;
+        };    
     }
 
     addTodo(title,description,id,completed) {
@@ -41,7 +41,7 @@ export default class Model {
         }
         this.todos.push(todo);
         this.save()
-        return {...todo}
+        return {...todo};
     }
 
     removeTodo(id) {
@@ -61,8 +61,7 @@ export default class Model {
 
     check(title,description,completed) {
         const index = this.todos.findIndex(todo => todo.title == title && todo.description == description);
-        const checked = this.todos[index];
-        checked.completed = completed;
+        this.todos[index].completed = completed;
         this.save();
     };
 };
