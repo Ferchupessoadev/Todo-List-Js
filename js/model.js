@@ -24,8 +24,7 @@ export default class Model {
                     description,
                     completed,
                 };
-                this.todos.push(todo);    
-                this.save();        
+                this.todos.push(todo);          
                 return todo;
             });
             return copyTodos;

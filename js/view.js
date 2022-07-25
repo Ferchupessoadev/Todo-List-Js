@@ -78,14 +78,9 @@ export default class View {
         this.model.id++
         const todo = this.model.addTodo(title,description,this.model.id,false);//es ultimo parametro es para marcar si esta completada la tarea.
         const addTodo = new createTodo();
-        let [ removeBtn , editBtn , todos , checkBtn] = addTodo.insertElements(todo.title,todo.description,this.model.id);
-        
+        let [ removeBtn , editBtn , todos , checkBtn] = addTodo.insertElements(todo.title,todo.description,this.model.id);      
         checkBtn.addEventListener("click",(e)=>{
-            if(checkBtn.checked) {
-                this.model.check(title,description,e.target.checked);
-            } else {
-                this.model.check(title,description,e.target.checked);
-            }
+            this.model.check(todo.title,todo.description,e.target.checked);
         });
 
         removeBtn.addEventListener("click",()=> this.removeTodo(todos.getAttribute("id")));
@@ -97,13 +92,9 @@ export default class View {
         const todo = this.model.render();// nos retorna una copia de los objetos del localStorage.
             todo.forEach((element) => {
                 const addTodo = new createTodo();
-                let [ removeBtn , editBtn , checkBtn] = addTodo.insertElements(element.title,element.description,element.id,element.completed);
+                let [ removeBtn , editBtn ,  addTodos , checkBtn] = addTodo.insertElements(element.title,element.description,element.id,element.completed);
                 checkBtn.addEventListener("click",(e)=>{
-                    if(checkBtn.checked) {
                         this.model.check(element.title,element.description,e.target.checked);
-                    } else {
-                        this.model.check(element.title,element.description,e.target.checked);
-                    }
                 });
                 removeBtn.addEventListener("click",()=> this.removeTodo(element.id));
                 editBtn.addEventListener("click",()=> this.editTodo(element.id));
