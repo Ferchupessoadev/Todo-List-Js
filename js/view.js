@@ -1,5 +1,4 @@
 import createTodo from './components/createTodo.js'; 
-import mostrarModal from './components/modal.js';
 import Alert from './components/alert.js';
 import Filter from './components/filter.js';
 
@@ -34,6 +33,10 @@ export default class View {
             e.preventDefault();
             this.filter.filterOnclick(this.filters,this.form);
         });
+        this.idViewModal = null;
+        this.changeListener = false;
+        this.btnCerrar.addEventListener("click",()=>this.onClickCerrar())
+	    this.btnGuardar.addEventListener("click",()=> this.onClickGuardar(this.idViewModal))
     };
     
     setModel(model) {
@@ -42,64 +45,83 @@ export default class View {
 
 
     removeTodo(id) {
-        const todo = document.getElementById(id);
         this.model.removeTodo(id);
+        let todo = document.getElementById(id);
         todo.remove();
     };
 
-    editTodo(id) {
-        let todo = document.getElementById(id);
-        const title = todo.children[0].textContent;
-        const description = todo.children[1].textContent;
-    
-        const [ inputTitle , inputDescription , modal] = mostrarModal(title,description);
-
-        this.btnCerrar.addEventListener("click",()=>{
-            modal.style.display = "none";
-            inputTitle.value = null;
-            inputDescription.value = null;
-        });
-
-        this.btnGuardar.addEventListener("click",()=> {
-            if (this.alert.alertForInputsOfEdit()){
-                const [ newTitle , newDescription ] = this.model.editTodo(title,description,inputTitle.value,inputDescription.value);  
-
-                todo.children[0].textContent = newTitle;
-                todo.children[1].textContent = newDescription;
-
-                modal.style.display = "none";
-                inputTitle.value = null;
-                inputDescription.value = null;
+    onClickCerrar() {
+        const modal = document.getElementById("modal");
+        const inputTitle = document.getElementById("title-edit");
+        const inputDescription = document.getElementById("description-edit");
+        inputTitle.value = null;
+        inputDescription.value = null;
+        modal.style.display = "none";
+    }
+  
+    onClickGuardar(id){
+        const inputTitle = document.getElementById("title-edit");
+        const inputDescription = document.getElementById("description-edit");
+        if (inputTitle.value == "" || inputDescription.value == "") {
+            if (inputTitle.value == "" ) {
+                inputTitle.style.border = "1px solid #f00";
+                inputTitle.addEventListener("click",()=> inputTitle.style.border = "none");
+            } else if (inputDescription.value == "" ) {
+                inputDescription.style.border = "1px solid #f00";
+                inputDescription.addEventListener("click",() => inputDescription.style.border = "none");
             }
-        });
-    };
+        } else {
+            this.model.editTodo(id,inputTitle.value,inputDescription.value);  
+            this.editTodo(id,inputTitle.value,inputDescription.value);
+        }
+    }  
+
+    viewModal(id) {
+        let todos = document.getElementById(id);
+        let title = todos.children[0];
+        let description = todos.children[1];
+        const modal = document.getElementById("modal");
+        const inputTitle = document.getElementById("title-edit");
+        const inputDescription = document.getElementById("description-edit");
+        modal.style.display = "flex";
+        inputTitle.value = title.textContent;
+        inputDescription.value = description.textContent; 
+        this.idViewModal = id;  
+    }
+
+    editTodo(id,newTitle,newDescription) {
+        const todo = document.getElementById(id);
+        const title = todo.children[0];
+        const description = todo.children[1];
+        title.textContent = newTitle;
+        description.textContent = newDescription;
+    }
 
     addTodo(title,description) {
-        this.model.id++
-        const todo = this.model.addTodo(title,description,this.model.id,false);//es ultimo parametro es para marcar si esta completada la tarea.
+        this.model.id = this.model.id + 1;
+        const { id,Title,Description, completed } = this.model.addTodo(title,description,this.model.id,false);//es ultimo parametro es para marcar si esta completada la tarea.
         const addTodo = new createTodo();
-        let [ removeBtn , editBtn , todos , checkBtn] = addTodo.insertElements(todo.title,todo.description,this.model.id);      
-        checkBtn.addEventListener("click",(e)=>{
-            this.model.check(todo.title,todo.description,e.target.checked);
+        const [ removeBtn , editBtn , todos , checkBtn] = addTodo.insertElements(title,description,id,completed);      
+        
+        checkBtn.addEventListener("click",(e) =>{
+            this.model.check(todos.children[0].textContent,todos.children[1].textContent,e.target.checked);
         });
 
-        removeBtn.addEventListener("click",()=> this.removeTodo(todos.getAttribute("id")));
-        editBtn.addEventListener("click",()=> this.editTodo(todos.getAttribute("id")));
+        removeBtn.addEventListener("click",()=> this.removeTodo(id));
+        editBtn.addEventListener("click",()=> this.viewModal(id));
     };
 
-    render() {   
-        console.log(localStorage.length); 
-        if(JSON.parse(localStorage.getItem("todos")).length > 0){
-        const todo = this.model.render();
-        console.log(todo)// nos retorna una copia de los objetos del localStorage.
+    render() { 
+        if(JSON.parse(localStorage.getItem("todos")).length > 0 && localStorage.length > 0){
+        let todo = this.model.render();
             todo.forEach((element) => {
                 const addTodo = new createTodo();
-                let [ removeBtn , editBtn ,  addTodos , checkBtn] = addTodo.insertElements(element.title,element.description,element.id,element.completed);
+                let [ removeBtn , editBtn ,  , checkBtn] = addTodo.insertElements(element.title,element.description,element.id,element.completed);
                 checkBtn.addEventListener("click",(e)=>{
                     this.model.check(element.title,element.description,e.target.checked);
                 });
                 removeBtn.addEventListener("click",()=> this.removeTodo(element.id));
-                editBtn.addEventListener("click",()=> this.editTodo(element.id));
+                editBtn.addEventListener("click",()=> this.viewModal(element.id));
             });
             let ultimoElemento = todo.pop();
             this.model.id = ultimoElemento.id;

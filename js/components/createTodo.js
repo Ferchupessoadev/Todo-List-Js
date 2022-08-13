@@ -1,6 +1,7 @@
 export default class CreateTodo {
     constructor () {
         this.addTodos = document.getElementById("add-todo");
+        this.fragmento = document.createDocumentFragment();
     }
 
     insertElements(title,description,id,completed) {
@@ -43,7 +44,8 @@ export default class CreateTodo {
         divBtn.appendChild(editBtn);
         divBtn.appendChild(removeBtn);
         addTodo.appendChild(divBtn);
-        this.addTodos.appendChild(addTodo);
+        this.fragmento.appendChild(addTodo);
+        this.addTodos.appendChild(this.fragmento);
         return [removeBtn,editBtn, addTodo,createChech];
     }
 

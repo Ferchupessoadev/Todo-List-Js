@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const model = new Model();
     const view = new View();
     const logicFilterInputs = new logicFilter();
-    model.setView(view);
     view.setModel(model);
+    model.setView(view);
     view.render();
 })
