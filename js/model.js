@@ -37,6 +37,7 @@ export default class Model {
             completed,
         }
         this.todos.push(todo);
+        this.save();
         return {...todo};
     }
 
