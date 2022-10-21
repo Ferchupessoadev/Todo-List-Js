@@ -11,15 +11,20 @@
     --color-de-listas:linear-gradient(to left,rgb(6, 9, 15),rgb(5, 16, 37));
 }
 
-body {
+main {
     display:flex;
-    flex-direction:column;
+    flex-direction: column;
+    height: auto;
+}
+
+body {
     background:var(--color-de-fondo);
+    height:100vh;
 }
 
 .section-filter {
     display:flex;
-    height:0px;
+    height: 0;
     align-items: center;
     justify-content:flex-start;
     gap:10px;
@@ -116,16 +121,19 @@ body {
 }
 
 
-nav {
+.nav {
     display:flex;
     align-items:center;
     justify-content:space-around;
     height:80px;
     background-color:rgb(0, 28, 36);
+    font-size:25px;
 }
 
 .nav__h1 {
     color:var(--color-dominator);
+    font-size:0.7em;
+
 }
 
 .nav__div {
@@ -225,25 +233,14 @@ nav {
     outline:2px solid #1a3;
 }
 
-.center-todo {
-    display:flex;
-    justify-content: center;
-    align-items:center;
-}
 
-.div-center {
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    width:60%;
-    padding:20px;
-    z-index:1;
-}
 
 .todo-list {
     display:flex;
     flex-direction:column;  
-    width:100%;
+    width:95%;
+    padding:20px;
+    z-index:1;
 }
 
 .div-info {
@@ -267,7 +264,7 @@ nav {
 
 .div-info__completed {
     flex:3;
-        color:var(--color-dominator);
+    color:var(--color-dominator);
 }
 
 .add-todo {
@@ -287,7 +284,7 @@ nav {
 .add-todo__title {
     flex:1;
     color:#fff;
-    padding-right: 20px;
+    padding-right: 35px;
     font-size:15px;
 }
 
@@ -295,18 +292,16 @@ nav {
     flex:2;
     color:#fff;
     font-size:15px;
-    padding-right: 20px;
+    padding-right: 100px;
 }
 
 .add-todo__completed {
     flex:3;
     display:flex;
     align-items:center;
+    /* padding-right: 20px; */
 }
 
-.checkbox {
-  margin-right:260px;
-}
 
 
 .trash {
@@ -407,32 +402,28 @@ nav {
     background: linear-gradient(to bottom,rgb(245, 25, 25),rgb(148, 30, 14))
 }
 
-footer {
-    display:flex;
-    position:fixed;
-    justify-content: center;
-    align-items:center;
-    grid-gap:10px;
-    height:40px;
-    width:100%;
-    margin-top:30px;
-    bottom:0px;
-    background:var(--color-de-listas);
-    color:#1c3;
-}
+@media screen and (max-width:1100px) {
 
-.footer__h3 {
-    color:var(--color-dominator);
-    border-bottom:1px solid transparent;
-}
+    .nav__h1 {
+        font-size:0.6em;
+    }
 
-footer a {
-    text-decoration: none;
-    color:#fff;
-    border-bottom:1px solid transparent;
-}
+    .nav__input {
+        width: 140px;
+    }
 
-footer a:hover {
-    color:#fff;
-    border-bottom:1px solid var(--color-dominator);
+    .nav__input-submit {
+        width: 100px;
+        padding:5px 25px;
+        font-size:0.9em;
+    }
+
+    .add-todo__title {
+        padding-right:2.5em;
+    }
+
+    .add-todo__description {
+        padding-right: 7em;
+    }
+
 }
