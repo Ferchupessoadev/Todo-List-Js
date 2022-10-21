@@ -1,6 +1,9 @@
 import createTodo from './components/createTodo.js'; 
 import Alert from './components/alert.js';
 import Filter from './components/filter.js';
+import toShowText from './components/toShowText.js';
+import hideText from './components/hideText.js';
+
 
 export default class View {
     constructor() {
@@ -31,12 +34,14 @@ export default class View {
         this.searchFilter = document.querySelector(".filter__search");
         this.searchFilter.addEventListener("click",(e)=>{
             e.preventDefault();
-            this.filter.filterOnclick(this.filters,this.form);
+            this.filter.filterOnclick(this.filters,this.form,this.model.getTodos());
         });
         this.idViewModal = null;
-        this.changeListener = false;
-        this.btnCerrar.addEventListener("click",()=>this.onClickCerrar())
-	    this.btnGuardar.addEventListener("click",()=> this.onClickGuardar(this.idViewModal))
+        this.btnCerrar.addEventListener("click",()=>this.onClickCerrar());
+	    this.btnGuardar.addEventListener("click",()=> this.onClickGuardar(this.idViewModal));
+        this.hoverBox = false;
+        this.viewWidth = window.innerWidth;
+        
     };
     
     setModel(model) {
@@ -48,6 +53,7 @@ export default class View {
         this.model.removeTodo(id);
         let todo = document.getElementById(id);
         todo.remove();
+        this.show
     };
 
     onClickCerrar() {
@@ -77,15 +83,14 @@ export default class View {
     }  
 
     viewModal(id) {
-        let todos = document.getElementById(id);
-        let title = todos.children[0];
-        let description = todos.children[1];
+        let todoData = this.model.todos;
+        let indexOfOneTodo = todoData.findIndex(todo => todo.id == id);
         const modal = document.getElementById("modal");
         const inputTitle = document.getElementById("title-edit");
         const inputDescription = document.getElementById("description-edit");
         modal.style.display = "flex";
-        inputTitle.value = title.textContent;
-        inputDescription.value = description.textContent; 
+        inputTitle.value = todoData[indexOfOneTodo].title;
+        inputDescription.value = todoData[indexOfOneTodo].description; 
         this.idViewModal = id;  
     }
 
@@ -93,11 +98,16 @@ export default class View {
         const todo = document.getElementById(id);
         const title = todo.children[0];
         const description = todo.children[1];
-        title.textContent = newTitle;
-        description.textContent = newDescription;
+        
+        if(newTitle.length > 9) title.textContent = `${newTitle.substring(0,9)}...`;
+        else title.textContent = newTitle;
+        
+        if(newDescription.length > 15) description.textContent = `${newDescription.substring(0,12)}...`;
+        else description.textContent = newDescription;
     }
 
     addTodo(title,description) {
+    
         this.model.id = this.model.id + 1;
         const { id,Title,Description, completed } = this.model.addTodo(title,description,this.model.id,false);//es ultimo parametro es para marcar si esta completada la tarea.
         const addTodo = new createTodo();
@@ -109,83 +119,105 @@ export default class View {
 
         removeBtn.addEventListener("click",()=> this.removeTodo(id));
         editBtn.addEventListener("click",()=> this.viewModal(id));
+        
+        let titleHTML = todos.children[0];
+        let descriptionHTML = todos.children[1];
+        
+        titleHTML.addEventListener("mouseover",(e) => this.hoverBox = toShowText(id,e.target.className,this.model.todos));
+        descriptionHTML.addEventListener("mouseover",(e) => this.hoverBox = toShowText(id,e.target.className,this.model.todos));
+
+
+        titleHTML.addEventListener("mouseout",(e) =>  this.hoverBox = hideText(this.hoverBox));
+        descriptionHTML.addEventListener("mouseout",(e) => this.hoverBox = hideText(this.hoverBox));
+
     };
+
 
     render() { 
         if(JSON.parse(localStorage.getItem("todos")).length > 0 && localStorage.length > 0){
         let todo = this.model.render();
             todo.forEach((element) => {
                 const addTodo = new createTodo();
-                let [ removeBtn , editBtn ,  , checkBtn] = addTodo.insertElements(element.title,element.description,element.id,element.completed);
+                let [ removeBtn , editBtn , todos , checkBtn] = addTodo.insertElements(element.title,element.description,element.id,element.completed);
                 checkBtn.addEventListener("click",(e)=>{
                     this.model.check(element.title,element.description,e.target.checked);
                 });
                 removeBtn.addEventListener("click",()=> this.removeTodo(element.id));
                 editBtn.addEventListener("click",()=> this.viewModal(element.id));
+                let titleHTML = todos.children[0];
+                let descriptionHTML = todos.children[1];
+                
+                titleHTML.addEventListener("mouseover",(e) => this.hoverBox = toShowText(element.id,e.target.className,this.model.todos));
+                descriptionHTML.addEventListener("mouseover",(e) => this.hoverBox =  toShowText(element.id,e.target.className,this.model.todos));
+
+                titleHTML.addEventListener("mouseout",(e) => this.hoverBox = hideText(this.hoverBox));
+                descriptionHTML.addEventListener("mouseout",(e) =>  this.hoverBox = hideText(this.hoverBox));
             });
             let ultimoElemento = todo.pop();
             this.model.id = ultimoElemento.id;
+           
         };
+        
     };
 
-    filters(filters){
-        const addTodos = document.getElementsByClassName("add-todo");
+    filters(filters,todos){
+        let addTodos = todos;
         const { type, words } = filters;
-        const getTodoAndValues = (todo,words)=> {
-            const title = todo.children[0].textContent;
-            const description = todo.children[1].textContent;
-            const check = todo.children[3].checked;
-            const TitleIncludes = title.includes(words);
-            const DescriptionIncludes = description.includes(words);
+        const getTodoAndValues = (todo)=> {
+            const title = todo.title;
+            const description = todo.description;
+            let check = todo.completed;
+            let TitleIncludes = title.includes(words);
+            let DescriptionIncludes = description.includes(words);
             return [check,TitleIncludes,DescriptionIncludes];
         }
-        if (type === "all" || type == undefined) {
-            if (words.length >= 1) {
-                for (const todo of addTodos) {
-                    let [,TitleIncludes,DescriptionIncludes] = getTodoAndValues(todo,words);
-                    if (TitleIncludes || DescriptionIncludes) todo.style.display = "flex";
-                    else todo.style.display = "none";
-                }
-            } else {
-                 for (const todo of addTodos) todo.style.display = "flex";
-            }
-        }
-        if (type == "completed") {
-            if(words.length > 0) {
-                for(const todo of addTodos) {
-                    todo.style.display = "none";
-                    const [check,TitleIncludes,DescriptionIncludes] = getTodoAndValues(todo,words);
-                    if(check) {
-                        if (TitleIncludes || DescriptionIncludes) todo.style.display = "flex";
-                    } 
-                    else todo.style.display = "none";
-                }
-            }
-            else {
-                for(let todo of addTodos) {
-                    let check = todo.children[3].checked;
-                    if (check) todo.style.display = "flex";
-                    else todo.style.display = "none";
-                }
-            }
-        }
-        if(type == "no completed"){
-            if(words.length >= 1) {
-                for(const todo of addTodos) {
-                    todo.style.display = "none";
-                    const [check,TitleIncludes,DescriptionIncludes] = getTodoAndValues(todo,words);
-                    if (!check) {
-                        if (TitleIncludes || DescriptionIncludes) todo.style.display = "flex";
-                        else todo.style.display = "none";
-                    }
-                } 
-            } else {
-                for(const todo of addTodos) {
-                    const check = todo.children[3].checked;
-                    if(check == false) todo.style.display = "flex";
-                    else todo.style.display = "none";
-                }
-            }
+        switch (type) {
+            case "all":
+                if (words.length > 0) {
+                    addTodos.forEach(todo => {
+                        const todos = document.getElementById(todo.id);
+                        const [,TitleIncludes,DescriptionIncludes] = getTodoAndValues(todo);
+                        if(TitleIncludes || DescriptionIncludes) todos.style.display = "flex";
+                        else todos.style.display = "none";
+                    })
+                } else addTodos.forEach(todo => document.getElementById(todo.id).style.display = "flex");
+                break;
+            case "completed":
+                if (words.length > 0) {
+                    addTodos.forEach(todo => {
+                        const todos = document.getElementById(todo.id);
+                        const [check,TitleIncludes,DescriptionIncludes] = getTodoAndValues(todo);
+                        if(check){ 
+                            if(TitleIncludes || DescriptionIncludes) todos.style.display = "flex";
+                            else todos.style.display = "none";
+                        }
+                        else todos.style.display = "none";
+                    });
+                } else addTodos.forEach(todo => {
+                    const todos = document.getElementById(todo.id);
+                    if(todo.completed) todos.style.display = "flex";
+                    else todos.style.display = "none";
+                })
+                break;
+            case "no completed":
+                if(words.length > 0) {
+                    addTodos.forEach(todo => {
+                        const todos = document.getElementById(todo.id);
+                        const [check,TitleIncludes,DescriptionIncludes] = getTodoAndValues(todo);
+                        if(!check) {
+                            if(TitleIncludes || DescriptionIncludes) todos.style.display = "flex";
+                            else todos.style.display = "none";
+                        } else todos.style.display = "none";
+                    })
+                } else addTodos.forEach(todo => {
+                    const todos = document.getElementById(todo.id);
+                    if(!todo.completed) todos.style.display = "flex";
+                    else todos.style.display = "none";
+                })
+                break;
+            default:
+                addTodos.forEach(todo => document.getElementById(todo.id).style.display = "flex")
+                break;
         }
     }
 };

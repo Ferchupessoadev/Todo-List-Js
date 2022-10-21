@@ -11,11 +11,16 @@ export default class CreateTodo {
 
         const createTitle = document.createElement("P");
         createTitle.classList.add("add-todo__title");
-        createTitle.innerHTML = title;
+        if(title.length > 9) createTitle.innerHTML = `${title.substring(0,9)}...`;
+        else createTitle.innerHTML = title;
 
         const createDescription = document.createElement("P");
         createDescription.classList.add("add-todo__description");
-        createDescription.innerHTML = description;
+        if(description.length > 15) createDescription.innerHTML = `${description.substring(0,12)}...`;
+        else createDescription.innerHTML = description;
+
+        createTitle.classList.add("add-todo__data");
+        createDescription.classList.add("add-todo__data");
 
         const createDivComplete = document.createElement("DIV");
         createDivComplete.classList.add("add-todo__completed");
@@ -24,6 +29,7 @@ export default class CreateTodo {
         createChech.setAttribute("type","checkbox");
         createChech.checked = completed;
         createChech.classList.add("checkbox");
+        createDivComplete.appendChild(createChech)
 
         const divBtn = document.createElement("DIV");
         divBtn.classList.add("add-todo__completed-img");
@@ -40,7 +46,7 @@ export default class CreateTodo {
         addTodo.appendChild(createDescription);
         addTodo.appendChild(createDescription)
         addTodo.appendChild(createDivComplete);
-        addTodo.appendChild(createChech);
+        // addTodo.appendChild(createChech);
         divBtn.appendChild(editBtn);
         divBtn.appendChild(removeBtn);
         addTodo.appendChild(divBtn);

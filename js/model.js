@@ -5,6 +5,10 @@ export default class Model {
         this.id = -1;
     }
 
+    getTodos() {
+        return this.todos;
+    }
+
     setView(view) {
         this.view = view;
     }
@@ -43,14 +47,13 @@ export default class Model {
 
     removeTodo(id) {
         const todo = document.getElementById(id);
-        let RemoveTodo = this.todos.findIndex((element) => element.title == todo.children[0].textContent && element.description == todo.children[1].textContent);
+        let RemoveTodo = this.todos.findIndex((element) => id == element.id);
         this.todos.splice(RemoveTodo,1);
         this.save()
     }
 
     editTodo(id,titleEdit,descriptionEdit) {
-        let todos = document.getElementById(id);
-        let index = this.todos.findIndex((todo) => todos.children[0].textContent == todo.title && todos.children[1].textContent == todo.description);
+        let index = this.todos.findIndex((todo) => id == todo.id);
         this.todos[index].title = titleEdit;
         this.todos[index].description = descriptionEdit;
         this.save();

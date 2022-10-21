@@ -3,8 +3,9 @@ export default class Filter {
 
     } 
 
-    filterOnclick(call,form) {
+    filterOnclick(call,form,todos) {
         const data = new FormData(form);
+        const input = document.getElementById("input-filter")
         let type = null;
         let all = data.has("all");
         let completed = data.has("completed");
@@ -15,7 +16,7 @@ export default class Filter {
         
         call({
             type,
-            words:data.get("words"),
-        });
+            words:input.value,
+        },todos);
     }
 }
